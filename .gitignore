@@ -1,0 +1,78 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+log/
+logs/
+
+# Secrets / local config
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Node
+node_modules/
+dist/
+.next/
+.nuxt/
+.vite/
+.turbo/
+
+# Ruby / Rails
+.bundle/
+vendor/bundle/
+tmp/cache/
+tmp/pids/
+log/
+storage/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.dylib
+*.test
+*.out
+bin/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+*.tfvars.json
+*.tfvars.local
+*.tfplan
+
+# Build artifacts
+build/
+out/
+
+# Coverage / cache
+coverage/
+.cache/
+.pytest_cache/
+.ruff_cache/
+.solr/
+
+# Tooling metadata
+.tool-versions.bak
+.ade/
+.tsbuildinfo
