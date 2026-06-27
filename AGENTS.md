@@ -52,15 +52,18 @@ Aplicar guías antes de actuar y sensores después de actuar.
 
 ### Sensores
 Después de cambios relevantes, ejecutar según aplique:
-- `make fmt`
-- `make lint`
-- `make test`
-- `make validate`
+- `make validate` (markdown lint + link check, en el docs repo)
+- `make lint`, `make links` (en docs repo)
+
+> **Este repo (root infra)**: no tiene `Makefile` propio. La validación de docs vive en [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) (donde corre `make validate`).
+>
+> **Cada subsistema polyrepo**: corré el `Makefile` del subsistema (tiene targets específicos de su stack).
 
 Si existe chequeo adicional por stack, usarlo también:
 - Frontend: tests de componentes, typecheck, build
 - Rails: tests, linters, validaciones de schema
 - Go: tests, format, vet o lint
+- Terraform: `terraform validate` + `terraform plan`
 
 Si algo falla, corregir antes de seguir o reportar bloqueo explícitamente.
 
@@ -151,14 +154,19 @@ Cuando el cambio lo justifique, considerar:
 No aplicar patrones complejos por defecto si el problema actual no lo necesita.
 
 ## Comandos del proyecto
-Usar estos comandos antes de cerrar trabajo:
-- `make deps`
-- `make fmt`
-- `make lint`
-- `make test`
-- `make validate`
+Usar estos comandos antes de cerrar trabajo, según el subsistema:
 
-Si falta alguno o no existe, reportarlo y proponer ajuste al Makefile.
+**Docs repo** ([`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs)):
+- `make validate` — markdown lint + link check
+- `make lint` / `make links` (granular)
+
+**Cada subsistema polyrepo** tiene su propio `Makefile` con targets específicos:
+- frontend: `make dev` / `make build` / `make lint` / `make validate`
+- admin: idem frontend
+- backend: `make lint` (rubocop) / `make test` (rails) / `make db_seed` / `make db_console` / `make logs`
+- face-search-service: targets Go (`go build` / `go test` / `go vet`)
+
+Si falta algún target o no existe, reportarlo y proponer ajuste al `Makefile` del subsistema correspondiente.
 
 ## Definition of Done
 Un cambio está listo solo si:
