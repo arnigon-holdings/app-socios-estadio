@@ -183,7 +183,12 @@ Siempre responder con:
 - Riesgos o pendientes
 
 ## Archivos de referencia
-- `SPEC.md`: fuente de verdad funcional
-- `ARCHITECTURE.md`: decisiones de arquitectura
-- `INFRASTRUCTURE.md`: detalle cloud y Terraform
-- `README.md`: setup y comandos
+
+> **Nota**: este AGENTS.md es la versión corta que vive en el root. La versión completa + docs detallados viven en el repo [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs). A partir de este cambio, el root NO contiene más docs (SPEC, ARCHITECTURE, INFRASTRUCTURE, etc.) — todos están en ese repo.
+
+- [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md): versión completa de este archivo (reglas operativas)
+- [`app-socios-estadio-docs/SPEC.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md): fuente de verdad funcional
+- [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md): decisiones de arquitectura
+- [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md): detalle cloud y Terraform
+- [`README.md`](./README.md): setup y comandos (este repo)
+- `Makefile` (ahora en docs repo): targets comunes de validación

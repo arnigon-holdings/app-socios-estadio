@@ -2,7 +2,7 @@
 
 Toda la infra del proyecto vive acá, separada por **quién la consume** (no por cloud).
 
-> **Por qué no por cloud**: AWS tiene recursos para backend (S3 + Rekognition) y para frontend (API Gateway + Lambda + Cognito). GCP todavía no tiene código Terraform desplegado (la fase GCP está planificada en `INFRASTRUCTURE.md` raíz). Separar por dominio hace más claro qué recurso es para qué servicio.
+> **Por qué no por cloud**: AWS tiene recursos para backend (S3 + Rekognition) y para frontend (API Gateway + Lambda + Cognito). GCP todavía no tiene código Terraform desplegado (la fase GCP está planificada en [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md)). Separar por dominio hace más claro qué recurso es para qué servicio.
 
 ## Estructura
 
@@ -52,7 +52,7 @@ Lo consume el **frontend SPA** (`frontend/`) en el browser, vía AWS Amplify SDK
 
 - ✅ `infrastructure/aws/` — desplegado en dev.
 - ✅ `infrastructure/frontend-liveness/` — desplegado en dev.
-- ⏳ GCP (Cloud SQL + Cloud Run + Memorystore) — pendiente, ver `../../INFRASTRUCTURE.md` raíz sección 4.
+- ⏳ GCP (Cloud SQL + Cloud Run + Memorystore) — pendiente, ver [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) sección 4.
 
 ## Deploy local
 
@@ -70,4 +70,4 @@ terraform init
 terraform plan
 ```
 
-Ver `INFRASTRUCTURE.md` raíz para los targets de Makefile (`make tf-plan-aws`, etc.).
+Ver [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) sección 7 para los targets de Makefile (`make tf-plan-aws`, etc.).

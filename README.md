@@ -1,27 +1,63 @@
-# App Socios Estadio
+# `app-socios-estadio` — root
 
 Plataforma SaaS para registro de socios de un club deportivo con verificación facial y sistema de puntos. Los socios se registran vía web con liveness check (anti-spoof), se identifican en el estadio por cara (búsqueda facial en acceso), y acumulan puntos canjeables por beneficios.
 
-> **Para agentes / LLMs / humanos nuevos en el proyecto**: leé este README primero, después `AGENTS.md` (reglas operativas), después el doc de tu subsistema (ver "Mapa de documentación" abajo).
+> **Para agentes / LLMs / humanos nuevos en el proyecto**: leé este README primero, después [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md) (reglas operativas), después el doc de tu subsistema (ver "Mapa de documentación" en el docs repo).
 
 ---
 
+## Este repo (root)
+
+El root contiene **solo** la infraestructura Terraform compartida y los entry points mínimos (`AGENTS.md` raíz + este `README.md` + `docs/`). Todo el código de aplicación y la documentación detallada (SPEC, ARCHITECTURE, INFRASTRUCTURE, CHECKLIST, ENVIRONMENT, HARNESS, Makefile) vive en repos separados.
+
+## Mapa de repos del proyecto
+
+| Repo | Contenido |
+|---|---|
+| [`arnigon-holdings/app-socios-estadio`](https://github.com/arnigon-holdings/app-socios-estadio) | **Este repo**: root + `infrastructure/` (Terraform) + `docs/` + `AGENTS.md` raíz |
+| [`arnigon-holdings/app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) | Documentación: AGENTS, ARCHITECTURE, SPEC, INFRASTRUCTURE, CHECKLIST, ENVIRONMENT, HARNESS, Makefile |
+| [`arnigon-holdings/app-socios-estadio-backend`](https://github.com/arnigon-holdings/app-socios-estadio-backend) | Rails 8 API (polyrepo, propio .git) |
+| [`arnigon-holdings/app-socios-estadio-frontend`](https://github.com/arnigon-holdings/app-socios-estadio-frontend) | React SPA socios (polyrepo, propio .git) |
+| [`arnigon-holdings/app-socios-estadio-admin`](https://github.com/arnigon-holdings/app-socios-estadio-admin) | React SPA admin (polyrepo, propio .git) |
+| [`arnigon-holdings/app-socios-estadio-face-search`](https://github.com/arnigon-holdings/app-socios-estadio-face-search) | Go service búsqueda facial (polyrepo, propio .git) |
+
+> **Convencion polyrepo**: cada subsistema es un repo git independiente. El root tiene solo infra compartida + entry points. Ver [`app-socios-estadio-docs/`](https://github.com/arnigon-holdings/app-socios-estadio-docs) para la documentación completa.
+
 ## Stack
 
-| Capa | Tecnología | Repositorio / path |
+| Capa | Tecnología | Repo |
 |---|---|---|
-| Frontend usuarios (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui | `frontend/` |
-| Admin panel (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui + TanStack Query | `admin/` |
-| Backend API | Ruby on Rails 8 API-only + PostgreSQL + Redis | `backend/` |
-| Face liveness (web) | AWS Lambda + API Gateway (FaceLiveness con Amplify SDK) | `infrastructure/frontend-liveness/` |
-| Face indexing (S3 + Rekognition) | Rails (`S3Uploader` + `FaceIndexer`) | `backend/` |
-| Face search (búsqueda + presigned) | Go 1.24 + AWS SDK v2 | `face-search-service/` |
-| Infrastructure as code (backend AWS) | Terraform (S3 + Rekognition + IAM) | `infrastructure/aws/` |
-| Infrastructure as code (frontend AWS) | Terraform (API Gateway + Lambda + Cognito + IAM + Lightsail) | `infrastructure/frontend-liveness/` |
+| Frontend usuarios (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui | `app-socios-estadio-frontend` |
+| Admin panel (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui + TanStack Query | `app-socios-estadio-admin` |
+| Backend API | Ruby on Rails 8 API-only + PostgreSQL + Redis | `app-socios-estadio-backend` |
+| Face liveness (web) | AWS Lambda + API Gateway + Cognito | `infrastructure/frontend-liveness/` (este repo) |
+| Face indexing (S3 + Rekognition) | Rails (`S3Uploader` + `FaceIndexer`) | `app-socios-estadio-backend` |
+| Face search (búsqueda + presigned) | Go 1.24 + AWS SDK v2 | `app-socios-estadio-face-search` |
+| Infrastructure as code (backend AWS) | Terraform (S3 + Rekognition + IAM) | `infrastructure/aws/` (este repo) |
+| Infrastructure as code (frontend AWS) | Terraform (API Gateway + Lambda + Cognito + IAM + Lightsail) | `infrastructure/frontend-liveness/` (este repo) |
 | DB prod | GCP Cloud SQL (PostgreSQL) | Terraform (futuro) |
 | Host prod | GCP Cloud Run | Dockerfiles ya listos |
 
-Cada subsistema es un **repositorio git independiente** dentro de esta raíz (polyrepo). El root tiene su propio `.git` con solo docs, `.gitignore`, `infrastructure/`.
+## Estructura del root
+
+```
+.
+├── README.md                  ← este archivo (entry point)
+├── AGENTS.md                  ← reglas operativas raíz (resumen; versión completa en docs repo)
+├── docs/
+│   └── ARQUITECTURA.md        ← borrador en español (versión final en docs repo)
+│
+└── infrastructure/            ← Terraform compartido (tracked en este repo)
+    ├── aws/                   ← backend AWS (S3 + Rekognition + IAM)
+    │   ├── main.tf
+    │   └── modules/{s3,rekognition}/
+    └── frontend-liveness/     ← frontend AWS (API Gateway + Lambda + Cognito + IAM + Lightsail)
+        ├── main.tf
+        ├── README.md          ← qué despliega + outputs que consume el frontend
+        └── modules/{apigateway,lambda,cognito,iam,lightsail}/
+```
+
+> Los 4 directorios de apps (`backend/`, `frontend/`, `admin/`, `face-search-service/`) **no viven en este repo**. Son polyrepos independientes con su propio `.git`. Si los ves localmente, son clones/worktrees que mantienen su propio historial.
 
 ---
 
@@ -30,14 +66,18 @@ Cada subsistema es un **repositorio git independiente** dentro de esta raíz (po
 Prerrequisitos: Docker, Node 20+, Ruby 3.4 (o usar Docker), AWS CLI configurado con credenciales de la cuenta de dev.
 
 ```bash
-# 1. Clonar y entrar
-git clone <repo-url> seguridad_estadio
-cd seguridad_estadio
+# 1. Clonar cada repo (polyrepo)
+git clone https://github.com/arnigon-holdings/app-socios-estadio.git
+git clone https://github.com/arnigon-holdings/app-socios-estadio-backend.git backend
+git clone https://github.com/arnigon-holdings/app-socios-estadio-frontend.git frontend
+git clone https://github.com/arnigon-holdings/app-socios-estadio-admin.git admin
+git clone https://github.com/arnigon-holdings/app-socios-estadio-face-search.git face-search-service
+git clone https://github.com/arnigon-holdings/app-socios-estadio-docs.git  # opcional, para AGENTS.md
 
 # 2. Backend: dependencias + DB
 cd backend
-docker compose up -d postgres redis        # solo infraestructura
-docker compose run --rm app bundle install  # gems
+docker compose up -d postgres redis
+docker compose run --rm app bundle install
 docker compose run --rm app bundle exec rails db:migrate db:seed
 cd ..
 
@@ -46,8 +86,7 @@ cp backend/.env.example backend/.env.aws
 # editar backend/.env.aws con AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY reales
 
 # 4. Levantar backend completo (incluye face-search Go)
-cd backend && docker compose up -d
-cd ..
+cd backend && docker compose up -d && cd ..
 
 # 5. Frontends (otro terminal cada uno)
 cd frontend && npm install && npm run dev    # http://localhost:5173
@@ -62,99 +101,37 @@ curl -s http://localhost:8081/health        # go health
 
 ---
 
-## Mapa de documentación
+## Documentación
 
-| Doc | Propósito | Cuándo leerlo |
-|---|---|---|
-| [`AGENTS.md`](./AGENTS.md) | Reglas operativas del agente: workflow, comunicación, principios de implementación, regla de UX "ocultar capa tecnológica", harness engineering | **Siempre primero** |
-| [`SPEC.md`](./SPEC.md) | Verdad funcional: qué hace el producto (registro, admin, búsqueda, puntos) | Al entender alcance |
-| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Boundaries por componente (frontend ↔ backend ↔ Go service), capas (domain/application/infrastructure), diagramas | Al diseñar features nuevas |
-| [`INFRASTRUCTURE.md`](./INFRASTRUCTURE.md) | Principios de infra, Terraform, IAM, deploy (GCP Cloud Run, Cloud SQL) | Al tocar infra o deploy |
-| [`CHECKLIST.md`](./CHECKLIST.md) | Estado de fases M0-M5 + Phase 2, qué falta, prioridades | Al planificar trabajo |
-| [`ENVIRONMENT.md`](./ENVIRONMENT.md) | Variables de entorno backend (referencia) | Al configurar entorno |
-| [`HARNESS.md`](./HARNESS.md) | Marco de harness engineering (feedforward/feedback) | Contexto conceptual |
-| `backend/CLAUDE.md` (no existe, ver AGENTS.md) | — | — |
-| [`frontend/CLAUDE.md`](./frontend/CLAUDE.md) | Contexto del frontend: liveness UX, decisiones de wizard | Al trabajar en `frontend/` |
-| [`admin/CLAUDE.md`](./admin/CLAUDE.md) | Contexto del admin: rutas, decisiones de tablas vs cards | Al trabajar en `admin/` |
-| [`backend/README.md`](./backend/README.md) | Comandos específicos del backend | Al levantar/testear Rails |
-| [`face-search-service/README.md`](./face-search-service/README.md) | Comandos del servicio Go | Al levantar/testear Go |
-| [`infrastructure/aws/`](./infrastructure/aws/) | Terraform de S3 + Rekognition + IAM | Al cambiar infra AWS |
+Toda la documentación detallada (SPEC, ARCHITECTURE, INFRASTRUCTURE, CHECKLIST, ENVIRONMENT, HARNESS, Makefile) está en:
 
----
+👉 **[`arnigon-holdings/app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs)**
 
-## Estructura del repo
-
-```
-.
-├── README.md                  ← este archivo
-├── AGENTS.md                  ← reglas operativas (LEER PRIMERO)
-├── SPEC.md                    ← verdad funcional
-├── ARCHITECTURE.md            ← boundaries
-├── INFRASTRUCTURE.md          ← Terraform + cloud (overview)
-├── CHECKLIST.md               ← fases M0-M5 + pendientes
-├── ENVIRONMENT.md             ← env vars backend
-├── HARNESS.md                 ← marco de harness engineering
-├── Makefile                   ← targets comunes (lint, test, validate)
-│
-├── backend/                   ← Rails 8 API (polyrepo, propio .git)
-│   ├── app/
-│   ├── db/
-│   ├── docker-compose.yml     ← postgres + redis + app + face-search
-│   └── .env.aws               ← (gitignored) AWS IAM keys
-│
-├── face-search-service/       ← Go 1.24 (polyrepo, propio .git)
-│   ├── cmd/server/main.go
-│   ├── internal/{config,db,handlers,middleware,rekognition}/
-│   ├── Dockerfile             ← golang:1.24-alpine + ca-certificates
-│   └── .env.example            ← (tracked) template
-│
-├── frontend/                  ← React SPA socios (polyrepo, propio .git)
-│   ├── src/
-│   ├── .env.example            ← (tracked) template
-│   └── .env.development        ← (tracked) dev defaults
-│
-├── admin/                     ← React SPA admin (polyrepo, propio .git)
-│   ├── src/
-│   ├── .env.example            ← (tracked) template
-│   └── .env.development        ← (tracked) dev defaults
-│
-└── infrastructure/            ← Terraform (tracked en root), separado por consumidor
-    ├── aws/                   ← backend AWS (S3 + Rekognition + IAM)
-    │   ├── main.tf
-    │   └── modules/{s3,rekognition}/
-    │
-    └── frontend-liveness/     ← frontend AWS (API Gateway + Lambda + Cognito + IAM + Lightsail)
-        ├── main.tf
-        ├── README.md          ← qué despliega + outputs que consume el frontend
-        └── modules/{apigateway,lambda,cognito,iam,lightsail}/
-```
-
-> La infra está toda en el root repo, separada por **quién la consume** (`aws/` → backend Rails+Go; `frontend-liveness/` → frontend browser). Ver `infrastructure/README.md` para detalle.
+Ahí vas a encontrar:
+- Mapa de documentación por subsistema
+- Reglas operativas para agentes (AGENTS.md)
+- Verdad funcional (SPEC.md)
+- Boundaries (ARCHITECTURE.md)
+- Terraform overview (INFRASTRUCTURE.md)
+- Estado del proyecto (CHECKLIST.md)
+- Variables de entorno (ENVIRONMENT.md)
+- Marco de trabajo (HARNESS.md)
+- Comandos comunes (Makefile)
 
 ---
 
 ## Convenciones del proyecto
 
-### Reglas operativas (resumen; ver AGENTS.md completo)
-
-- **Calidad > eficiencia > seguridad > agregar código nuevo**.
-- **KISS primero**, DRY solo cuando haya duplicación real.
-- **Borrar código obsoleto, no comentarlo**.
-- **No abstraer por anticipación**.
-- **Cambios pequeños, locales y reversibles**.
-- Cada subsistema es un **polyrepo git independiente** — los commits van al repo del subsistema, no al root.
-
 ### Regla de UX: ocultar la capa tecnológica
 
-**Ningún texto visible al usuario (socio, admin, o cualquier rol) puede mencionar proveedores ni servicios de infraestructura**: AWS, GCP, Azure, Rekognition, S3, Cloud SQL, Lambda, Cloud Run, etc. Mensajes user-facing describen comportamiento, no marca:
+Ningún texto visible al usuario (socio, admin, o cualquier rol) puede mencionar proveedores ni servicios de infraestructura: AWS, GCP, Azure, Rekognition, S3, Cloud SQL, Lambda, Cloud Run, etc. Mensajes user-facing describen comportamiento, no marca:
 
 - ❌ `"Buscando coincidencias en Rekognition…"`
 - ✅ `"Buscando coincidencias…"`
-
 - ❌ `"Conectando con servicios de AWS..."`
 - ✅ `"Conectando con el servicio de verificación..."`
 
-**Excepción permitida**: nombres de campos internos del contrato API (`rekognition_face_id`, `s3_key`) sí pueden existir en types/JSON, no se muestran al usuario.
+Excepción permitida: nombres de campos internos del contrato API (`rekognition_face_id`, `s3_key`) sí pueden existir en types/JSON, no se muestran al usuario.
 
 ### Comunicación con el agente
 
@@ -184,35 +161,24 @@ curl -s http://localhost:8081/health        # go health
 ```bash
 # Backend
 cd backend
-docker compose up -d                       # levanta todo (postgres + redis + app + face-search)
-docker compose logs -f app                 # logs Rails
-docker compose logs -f face-search         # logs Go
+docker compose up -d
+docker compose logs -f app
 docker compose run --rm app bundle exec rails db:migrate db:seed
-docker compose run --rm app bundle exec rails console
-docker compose run --rm app bundle exec rubocop
-docker compose run --rm app bundle exec rails test
 
 # Frontend
-cd frontend && npm run dev                 # http://localhost:5173
-cd admin && npm run dev                    # http://localhost:5174
+cd frontend && npm run dev   # http://localhost:5173
+cd admin && npm run dev      # http://localhost:5174
 
-# Terraform (S3 + Rekognition + IAM)
-cd infrastructure/aws
-terraform init
-terraform plan
-terraform apply
-
-# Tests del sistema (E2E manual)
-# 1. Registrar un socio vía http://localhost:5173/registro (7 pasos, liveness OK)
-# 2. Login admin en http://localhost:5174
-# 3. Ir a "Búsqueda Facial", subir foto -> buscar match
+# Terraform
+cd infrastructure/aws && terraform init && terraform plan
+cd infrastructure/frontend-liveness && terraform init && terraform plan
 ```
 
 ---
 
 ## Estado actual
 
-Ver [`CHECKLIST.md`](./CHECKLIST.md). TL;DR:
+Ver [`app-socios-estadio-docs/CHECKLIST.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/CHECKLIST.md). TL;DR:
 
 - **M0-M5 ✅**: setup, registro público, admin, seguridad, búsqueda facial.
 - **Pendiente alta**: rotar credenciales AWS filtradas en git history (ver CHECKLIST).
@@ -224,13 +190,14 @@ Ver [`CHECKLIST.md`](./CHECKLIST.md). TL;DR:
 ## Para LLMs que arrancan en el proyecto
 
 1. **Leé este README** (orientación general).
-2. **Leé [`AGENTS.md`](./AGENTS.md)** (reglas operativas — no negociables).
-3. **Leé [`SPEC.md`](./SPEC.md)** (qué hace el producto).
-4. **Leé [`ARCHITECTURE.md`](./ARCHITECTURE.md)** (boundaries — qué puede tocar tu subsistema).
-5. **Si vas a tocar `frontend/`**: leé también [`frontend/CLAUDE.md`](./frontend/CLAUDE.md).
-6. **Si vas a tocar `admin/`**: leé también [`admin/CLAUDE.md`](./admin/CLAUDE.md).
-7. **Si vas a tocar infra (Terraform)**: leé [`INFRASTRUCTURE.md`](./INFRASTRUCTURE.md).
+2. **Leé [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md)** (reglas operativas — no negociables).
+3. **Leé [`app-socios-estadio-docs/SPEC.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md)** (qué hace el producto).
+4. **Leé [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md)** (boundaries — qué puede tocar tu subsistema).
+5. **Si vas a tocar frontend**: leé también [`app-socios-estadio-frontend/CLAUDE.md`](https://github.com/arnigon-holdings/app-socios-estadio-frontend/blob/main/CLAUDE.md).
+6. **Si vas a tocar admin**: leé también [`app-socios-estadio-admin/CLAUDE.md`](https://github.com/arnigon-holdings/app-socios-estadio-admin/blob/main/CLAUDE.md).
+7. **Si vas a tocar infra (Terraform)**: leé [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) + explorá `infrastructure/` local.
 8. **Antes de commitear**: corré `git status` + `git diff` para verificar qué entra, especialmente buscar secrets (`git grep -E "AKIA|AIza"`).
 
 **Output esperado del agente** (per AGENTS.md):
+
 > Cambios pequeños, locales y reversibles. Sin sobreingeniería. Sin comentarios obvios. Tests cuando aplica. Reportar qué se hizo, qué se verificó, qué queda pendiente.
