@@ -14,7 +14,7 @@ El root contiene **solo** la infraestructura Terraform compartida y los entry po
 
 | Repo | Contenido |
 |---|---|
-| [`arnigon-holdings/app-socios-estadio`](https://github.com/arnigon-holdings/app-socios-estadio) | **Este repo**: root + `infrastructure/` (Terraform) + `docs/` + `AGENTS.md` raíz |
+| [`arnigon-holdings/app-socios-estadio-infra`](https://github.com/arnigon-holdings/app-socios-estadio-infra) | **Este repo**: root + `infrastructure/` (Terraform) + `docs/` + `AGENTS.md` raíz |
 | [`arnigon-holdings/app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) | Documentación: AGENTS, ARCHITECTURE, SPEC, INFRASTRUCTURE, CHECKLIST, ENVIRONMENT, HARNESS, Makefile |
 | [`arnigon-holdings/app-socios-estadio-backend`](https://github.com/arnigon-holdings/app-socios-estadio-backend) | Rails 8 API (polyrepo, propio .git) |
 | [`arnigon-holdings/app-socios-estadio-frontend`](https://github.com/arnigon-holdings/app-socios-estadio-frontend) | React SPA socios (polyrepo, propio .git) |
@@ -67,7 +67,7 @@ Prerrequisitos: Docker, Node 20+, Ruby 3.4 (o usar Docker), AWS CLI configurado 
 
 ```bash
 # 1. Clonar cada repo (polyrepo)
-git clone https://github.com/arnigon-holdings/app-socios-estadio.git
+git clone https://github.com/arnigon-holdings/app-socios-estadio-infra.git
 git clone https://github.com/arnigon-holdings/app-socios-estadio-backend.git backend
 git clone https://github.com/arnigon-holdings/app-socios-estadio-frontend.git frontend
 git clone https://github.com/arnigon-holdings/app-socios-estadio-admin.git admin
