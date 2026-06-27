@@ -57,7 +57,7 @@ curl -s http://localhost:3000/up            # rails health
 curl -s http://localhost:8081/health        # go health
 ```
 
-**Login admin por defecto** (seed): `admin@appperfil.cl` / `Admin123!`
+**Login admin por defecto** (seed, configurable via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` en `backend/.env.development`): defaults a `admin@appperfil.cl` / `Admin123!`.
 
 ---
 
