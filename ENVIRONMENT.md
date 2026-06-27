@@ -128,5 +128,8 @@ VITE_ADMIN_PASSWORD=Admin123!
 | frontend | `frontend/.env.example` | `frontend/.env.development` | `frontend/.env`, `frontend/.env.local`, `frontend/.env.production` |
 | admin | `admin/.env.example` | `admin/.env.development` | `admin/.env`, `admin/.env.local`, `admin/.env.production` |
 | face-search-service | `face-search-service/.env.example` | `face-search-service/.env.development` | `face-search-service/.env`, `face-search-service/.env.production` |
+| infrastructure (Terraform) | `infrastructure/*/variables.tf` (defaults en código) | n/a | `infrastructure/*/*.tfvars` (gitignored por `.gitignore` raíz) |
 
 > Los `.env.development` son tracked y funcionan out-of-the-box con defaults seguros (sin secretos reales). En prod, override via Secret Manager / env vars del Cloud Run service.
+> 
+> **Terraform**: los secretos sensibles van en `*.tfvars` (gitignored por el `.gitignore` raíz). Cada directorio en `infrastructure/` (ej: `infrastructure/frontend-liveness/`) tiene su propio `.gitignore` que excluye `.terraform/`, state files, y tfvars.

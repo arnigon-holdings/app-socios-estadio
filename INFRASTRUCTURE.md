@@ -12,30 +12,44 @@
 
 ## 2. Estructura Terraform
 
+La infra se separa por **quién la consume**, no por cloud. AWS tiene recursos para backend y frontend en stacks separados.
+
 ```txt
 infrastructure/
-├── aws/
-│   ├── main.tf
+├── aws/                     ← consumido por BACKEND (Rails + Go service)
+│   ├── main.tf              ← provider + S3 + Rekognition + IAM del backend
 │   ├── variables.tf
 │   ├── outputs.tf
-│   ├── *.tfvars
+│   ├── *.tfvars             ← (gitignored)
 │   └── modules/
-│       ├── s3/
-│       ├── rekognition/
-│       └── iam/
-├── gcp/
-│   ├── main.tf
+│       ├── s3/              ← bucket de fotos de socios
+│       ├── rekognition/     ← colección de caras indexadas
+│       └── iam/             ← service account roles
+│
+├── frontend-liveness/       ← consumido por FRONTEND (browser, Amplify SDK)
+│   ├── main.tf              ← provider + API Gateway + Lambda + Cognito
 │   ├── variables.tf
-│   ├── outputs.tf
-│   ├── *.tfvars
+│   ├── outputs.tf           ← outputs consumidos por frontend (api_url, api_key, cognito_*)
+│   ├── *.tfvars             ← (gitignored)
 │   └── modules/
-│       ├── cloud-sql/
-│       ├── cloud-run/
-│       ├── memorystore/
-│       └── artifact-registry/
-└── shared/
-    └── modules/ (si aplica)
+│       ├── apigateway/      ← REST API + API key
+│       ├── lambda/          ← 3 funciones Python (create_session, get_results, streaming)
+│       ├── cognito/         ← Identity Pool + User Pool + Client
+│       ├── iam/             ← roles para Lambda + API Gateway
+│       └── lightsail/       ← (opcional) relay instance para WebSocket
+│
+└── gcp/                     ← (futuro) consumido por BACKEND en prod
+    ├── main.tf
+    ├── variables.tf
+    ├── outputs.tf
+    └── modules/
+        ├── cloud-sql/       ← PostgreSQL principal
+        ├── cloud-run/       ← Rails API + Go service
+        ├── memorystore/     ← Redis
+        └── artifact-registry/
 ```
+
+> Ver [`infrastructure/README.md`](./infrastructure/README.md) para el detalle de cada stack y qué servicio lo consume.
 
 ---
 
@@ -43,10 +57,15 @@ infrastructure/
 
 ### 3.1 Servicios
 
-- S3: bucket privado para fotos (`perfilamiento-faces` en prod).
-- Rekognition Face Collection: `socios_stadium_users`.
-- Lambda + API Gateway: Face Liveness (ya existe).
-- Go service (Cloud Run): expone `POST /search-face` al admin panel. Auth vía bearer token (`FACE_SEARCH_TOKEN`). CORS allowlist vía `CORS_ORIGINS` (no usar `*`).
+- **Stack backend** (`infrastructure/aws/`):
+  - S3: bucket privado para fotos (`perfilamiento-faces` en prod).
+  - Rekognition Face Collection: `socios_stadium_users`.
+  - IAM: service account role con permisos S3 + Rekognition (least privilege).
+- **Stack frontend** (`infrastructure/frontend-liveness/`):
+  - Lambda + API Gateway: Face Liveness (control plane para Rekognition).
+  - Cognito: Identity Pool + User Pool para Amplify SDK.
+  - Lightsail (opcional): relay para WebSocket streaming.
+- **Go service** (Cloud Run): expone `POST /search-face` al admin panel. Auth vía bearer token (`FACE_SEARCH_TOKEN`). CORS allowlist vía `CORS_ORIGINS` (no usar `*`).
 
 ### 3.2 IAM (principio)
 

@@ -72,11 +72,18 @@
 
 ## M5 — Face Search System
 
-### Terraform (`infrastructure/aws/`)
+### Terraform backend (`infrastructure/aws/`)
 | Item | Estado | Notas |
 |------|--------|-------|
-| Lambda `face-liveness-create-session` | ✅ | en `frontend/terraform/` |
-| Lambda `face-liveness-get-results` | ✅ | en `frontend/terraform/` |
+| S3 bucket `perfilamiento-faces` | ✅ | |
+| Rekognition collection `socios_stadium_users` | ✅ | |
+| IAM role (S3 + Rekognition) | ✅ | |
+
+### Terraform frontend (`infrastructure/frontend-liveness/`)
+| Item | Estado | Notas |
+|------|--------|-------|
+| Lambda `face-liveness-create-session` | ✅ | |
+| Lambda `face-liveness-get-results` | ✅ | |
 | API Gateway | ✅ | ID: `a8rgaq8bv0` |
 | API Key | ✅ | |
 | Cognito IAM role | ✅ | `rekognition:StartFaceLivenessSession` |

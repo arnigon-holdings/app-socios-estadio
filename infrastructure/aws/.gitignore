@@ -1,5 +1,5 @@
 # Terraform state and lock files (state should be remote per INFRASTRUCTURE.md,
-# but matches existing pattern in frontend/terraform which uses local state)
+# but matches existing pattern in infrastructure/frontend-liveness/ which uses local state)
 *.tfstate
 *.tfstate.*
 *.tfstate.backup

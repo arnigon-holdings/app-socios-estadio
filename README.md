@@ -13,10 +13,11 @@ Plataforma SaaS para registro de socios de un club deportivo con verificación f
 | Frontend usuarios (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui | `frontend/` |
 | Admin panel (SPA) | React 19 + Vite + Tailwind v4 + shadcn/ui + TanStack Query | `admin/` |
 | Backend API | Ruby on Rails 8 API-only + PostgreSQL + Redis | `backend/` |
-| Face liveness (web) | AWS Lambda + API Gateway (FaceLiveness con Amplify SDK) | `frontend/terraform/` |
+| Face liveness (web) | AWS Lambda + API Gateway (FaceLiveness con Amplify SDK) | `infrastructure/frontend-liveness/` |
 | Face indexing (S3 + Rekognition) | Rails (`S3Uploader` + `FaceIndexer`) | `backend/` |
 | Face search (búsqueda + presigned) | Go 1.24 + AWS SDK v2 | `face-search-service/` |
-| Infrastructure as code | Terraform (s3, rekognition, IAM modules) | `infrastructure/aws/` |
+| Infrastructure as code (backend AWS) | Terraform (S3 + Rekognition + IAM) | `infrastructure/aws/` |
+| Infrastructure as code (frontend AWS) | Terraform (API Gateway + Lambda + Cognito + IAM + Lightsail) | `infrastructure/frontend-liveness/` |
 | DB prod | GCP Cloud SQL (PostgreSQL) | Terraform (futuro) |
 | Host prod | GCP Cloud Run | Dockerfiles ya listos |
 
@@ -89,7 +90,7 @@ curl -s http://localhost:8081/health        # go health
 ├── AGENTS.md                  ← reglas operativas (LEER PRIMERO)
 ├── SPEC.md                    ← verdad funcional
 ├── ARCHITECTURE.md            ← boundaries
-├── INFRASTRUCTURE.md          ← Terraform + cloud
+├── INFRASTRUCTURE.md          ← Terraform + cloud (overview)
 ├── CHECKLIST.md               ← fases M0-M5 + pendientes
 ├── ENVIRONMENT.md             ← env vars backend
 ├── HARNESS.md                 ← marco de harness engineering
@@ -109,21 +110,26 @@ curl -s http://localhost:8081/health        # go health
 │
 ├── frontend/                  ← React SPA socios (polyrepo, propio .git)
 │   ├── src/
-│   ├── terraform/              ← Lambda + API Gateway (Face Liveness)
 │   ├── .env.example            ← (tracked) template
-│   └── .env                    ← (gitignored) dev secrets
+│   └── .env.development        ← (tracked) dev defaults
 │
 ├── admin/                     ← React SPA admin (polyrepo, propio .git)
 │   ├── src/
 │   ├── .env.example            ← (tracked) template
-│   └── .env.local              ← (gitignored) dev secrets
+│   └── .env.development        ← (tracked) dev defaults
 │
-└── infrastructure/aws/        ← Terraform de M5 (tracked en root)
-    ├── main.tf                ← provider + s3 + rekognition + IAM
-    ├── variables.tf
-    ├── outputs.tf
-    └── modules/{s3,rekognition}/
+└── infrastructure/            ← Terraform (tracked en root), separado por consumidor
+    ├── aws/                   ← backend AWS (S3 + Rekognition + IAM)
+    │   ├── main.tf
+    │   └── modules/{s3,rekognition}/
+    │
+    └── frontend-liveness/     ← frontend AWS (API Gateway + Lambda + Cognito + IAM + Lightsail)
+        ├── main.tf
+        ├── README.md          ← qué despliega + outputs que consume el frontend
+        └── modules/{apigateway,lambda,cognito,iam,lightsail}/
 ```
+
+> La infra está toda en el root repo, separada por **quién la consume** (`aws/` → backend Rails+Go; `frontend-liveness/` → frontend browser). Ver `infrastructure/README.md` para detalle.
 
 ---
 
