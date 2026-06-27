@@ -1,5 +1,7 @@
 # Stadium Members App — Architecture
 
+> Diagrams and main flows (user registration, face search). For project entry point and stack, see [`../README.md`](../README.md). For operational rules, see [`../AGENTS.md`](../AGENTS.md).
+
 ```mermaid
 flowchart TB
     subgraph Frontend["Frontend"]
@@ -157,3 +159,15 @@ sequenceDiagram
 |-------|---------------|
 | AWS | S3 Bucket (`tf-state-aws`) |
 | GCP | Cloud Storage (`tf-state-gcp`) |
+
+---
+
+## See also
+
+| File | Purpose |
+|---|---|
+| [`../README.md`](../README.md) | Project entry point — stack, quickstart, conventions, polyrepo map |
+| [`../AGENTS.md`](../AGENTS.md) | Operational rules for agents |
+| [`../infrastructure/README.md`](../infrastructure/README.md) | Terraform infrastructure overview (how the AWS + GCP resources above are organized in code) |
+| [`../infrastructure/frontend-liveness/README.md`](../infrastructure/frontend-liveness/README.md) | Face Liveness Terraform module detail (deploys API Gateway + Lambda + Cognito shown in the diagrams above) |
+| [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md) | Full architecture decisions (docs repo) |

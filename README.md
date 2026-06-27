@@ -103,19 +103,30 @@ curl -s http://localhost:8081/health        # go health
 
 ## Documentation
 
+### In this repo
+
+| File | Purpose |
+|---|---|
+| [`README.md`](./README.md) | This file — project entry point, stack, quickstart, conventions |
+| [`AGENTS.md`](./AGENTS.md) | Operational rules for agents (short version; full version in docs repo) |
+| [`docs/ARQUITECTURA.md`](./docs/ARQUITECTURA.md) | Architecture diagrams and main flows (user registration, face search) |
+| [`infrastructure/README.md`](./infrastructure/README.md) | Terraform infrastructure overview (backend AWS + frontend liveness) |
+| [`infrastructure/frontend-liveness/README.md`](./infrastructure/frontend-liveness/README.md) | Face Liveness Terraform module — what it deploys and outputs consumed by the frontend |
+
+### External (docs repo)
+
 All detailed documentation (SPEC, ARCHITECTURE, INFRASTRUCTURE, CHECKLIST, ENVIRONMENT, HARNESS, Makefile) lives in:
 
 👉 **[`arnigon-holdings/app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs)**
 
 There you will find:
-- Documentation map per subsystem
-- Operational rules for agents (AGENTS.md)
-- Functional source of truth (SPEC.md)
-- Boundaries (ARCHITECTURE.md)
-- Terraform overview (INFRASTRUCTURE.md)
-- Project status (CHECKLIST.md)
-- Environment variables (ENVIRONMENT.md)
-- Work framework (HARNESS.md)
+- Full operational rules for agents ([AGENTS.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md))
+- Functional source of truth ([SPEC.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md))
+- Architecture decisions ([ARCHITECTURE.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md))
+- Terraform overview ([INFRASTRUCTURE.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md))
+- Project status ([CHECKLIST.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/CHECKLIST.md))
+- Environment variables ([ENVIRONMENT.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ENVIRONMENT.md))
+- Work framework ([HARNESS.md](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/HARNESS.md))
 - Common commands (Makefile)
 
 ---

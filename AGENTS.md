@@ -219,9 +219,19 @@ Always respond with:
 
 > **Note**: this AGENTS.md is the short version that lives at the root. The full version + detailed docs live in the [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) repo. As of this change, the root does NOT contain more docs (SPEC, ARCHITECTURE, INFRASTRUCTURE, etc.) — all of them are in that repo.
 
+### Internal (this repo)
+
+| File | Purpose |
+|---|---|
+| [`README.md`](./README.md) | Project entry point — stack, quickstart, conventions, polyrepo map |
+| [`docs/ARQUITECTURA.md`](./docs/ARQUITECTURA.md) | Architecture diagrams and main flows (user registration, face search) |
+| [`infrastructure/README.md`](./infrastructure/README.md) | Terraform infrastructure overview |
+| [`infrastructure/frontend-liveness/README.md`](./infrastructure/frontend-liveness/README.md) | Face Liveness Terraform module detail |
+
+### External (docs repo)
+
 - [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md): full version of this file (operational rules)
 - [`app-socios-estadio-docs/SPEC.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md): functional source of truth
 - [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md): architecture decisions
 - [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md): cloud and Terraform detail
-- [`README.md`](./README.md): setup and commands (this repo)
-- `Makefile` (now in docs repo): common validation targets
+- `Makefile` (in docs repo): common validation targets

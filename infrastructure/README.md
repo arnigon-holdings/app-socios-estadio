@@ -71,3 +71,15 @@ terraform plan
 ```
 
 See [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) section 7 for Makefile targets (`make tf-plan-aws`, etc.).
+
+---
+
+## See also
+
+| File | Purpose |
+|---|---|
+| [`../README.md`](../README.md) | Project entry point — stack, quickstart, conventions, polyrepo map |
+| [`../AGENTS.md`](../AGENTS.md) | Operational rules for agents (must-read before any infra change) |
+| [`../docs/ARQUITECTURA.md`](../docs/ARQUITECTURA.md) | Architecture diagrams — what each cloud resource above is used for in the flows |
+| [`./frontend-liveness/README.md`](./frontend-liveness/README.md) | Face Liveness module detail (API Gateway + Lambda + Cognito) |
+| [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) | Full infrastructure doc (docs repo) |

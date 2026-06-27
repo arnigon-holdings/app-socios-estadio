@@ -55,3 +55,15 @@ Sensitive variables (`api_key_name`, etc.) live in `terraform.tfvars` (gitignore
 - `modules/lambda/src/*.zip` — build artifact (Terraform regenerates it with `data "archive_file"`)
 
 See `.gitignore` in this directory.
+
+---
+
+## See also
+
+| File | Purpose |
+|---|---|
+| [`../../README.md`](../../README.md) | Project entry point — stack, quickstart, conventions |
+| [`../../AGENTS.md`](../../AGENTS.md) | Operational rules for agents (must-read before any infra change) |
+| [`../../docs/ARQUITECTURA.md`](../../docs/ARQUITECTURA.md) | Architecture diagrams — see the "Liveness Flow" sequence diagram for what this module supports |
+| [`../README.md`](../README.md) | Sibling Terraform overview (`infrastructure/aws/` and this module) |
+| [`app-socios-estadio-frontend/README.md`](https://github.com/arnigon-holdings/app-socios-estadio-frontend/blob/main/README.md) | Consumer side (polyrepo) — env vars and Amplify SDK usage |
