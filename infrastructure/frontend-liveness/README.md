@@ -1,40 +1,40 @@
 # `infrastructure/frontend-liveness/` — Terraform (Face Liveness)
 
-Terraform para el backend de Face Liveness que usa el **frontend** (registro de socios, wizard paso 4).
+Terraform for the Face Liveness backend used by the **frontend** (member registration, wizard step 4).
 
-## ¿Qué despliega?
+## What does it deploy?
 
-- **API Gateway** (`modules/apigateway/`): REST API con API key + usage plan + stage `prod`.
-- **Lambda** (`modules/lambda/`): 3 funciones Python que dan soporte al Face Liveness.
-  - `create_session.py` — crea la sesión Rekognition.
-  - `get_results.py` — devuelve el resultado de liveness.
-  - `get_signed_streaming_url.py` — config del streaming URL.
-- **Cognito** (`modules/cognito/`): Identity Pool + User Pool + Client que el SDK de Amplify consume desde el browser.
-- **IAM** (`modules/iam/`): roles y policies para Lambda + API Gateway (least privilege).
-- **Lightsail** (`modules/lightsail/`): [opcional] instancia relay como alternativa a API Gateway WebSocket directo. No se usa en prod actualmente.
+- **API Gateway** (`modules/apigateway/`): REST API with API key + usage plan + `prod` stage.
+- **Lambda** (`modules/lambda/`): 3 Python functions that support Face Liveness.
+  - `create_session.py` — creates the Rekognition session.
+  - `get_results.py` — returns the liveness result.
+  - `get_signed_streaming_url.py` — streaming URL configuration.
+- **Cognito** (`modules/cognito/`): Identity Pool + User Pool + Client that the Amplify SDK consumes from the browser.
+- **IAM** (`modules/iam/`): roles and policies for Lambda + API Gateway (least privilege).
+- **Lightsail** (`modules/lightsail/`): [optional] relay instance as an alternative to direct API Gateway WebSocket. Not used in prod currently.
 
-## Diferencia con `infrastructure/aws/`
+## Difference with `infrastructure/aws/`
 
-| Directorio | Para quién | Recursos |
+| Directory | For whom | Resources |
 |---|---|---|
-| `infrastructure/aws/` | **backend** (Rails) | S3 (fotos), Rekognition collection, IAM del Rails service |
+| `infrastructure/aws/` | **backend** (Rails) | S3 (photos), Rekognition collection, IAM for the Rails service |
 | `infrastructure/frontend-liveness/` | **frontend** (browser) | API Gateway, Lambda (Rekognition control plane), Cognito, Lightsail |
 
-> La colección Rekognition (`socios_stadium_users`) y el bucket S3 (`perfilamiento-faces`) son recursos **del backend** pero el frontend los referencia vía env vars (`VITE_FACE_LIVENESS_API_URL`, `VITE_COGNITO_*`).
+> The Rekognition collection (`socios_stadium_users`) and the S3 bucket (`perfilamiento-faces`) are **backend** resources, but the frontend references them via env vars (`VITE_FACE_LIVENESS_API_URL`, `VITE_COGNITO_*`).
 
-## Outputs consumidos por el frontend
+## Outputs consumed by the frontend
 
-Después de `terraform apply`:
+After `terraform apply`:
 
-| Output | Env var del frontend | Propósito |
+| Output | Frontend env var | Purpose |
 |---|---|---|
-| `api_gateway_url` | `VITE_FACE_LIVENESS_API_URL` | URL completa del API Gateway (Vite dev proxy + Amplify SDK en prod) |
-| `api_key_value` | `VITE_FACE_LIVENESS_API_KEY` | API key enviada como header `X-Api-Key` |
-| `cognito_identity_pool_id` | `VITE_COGNITO_IDENTITY_POOL_ID` | Identity Pool del Amplify SDK |
+| `api_gateway_url` | `VITE_FACE_LIVENESS_API_URL` | Full API Gateway URL (Vite dev proxy + Amplify SDK in prod) |
+| `api_key_value` | `VITE_FACE_LIVENESS_API_KEY` | API key sent as the `X-Api-Key` header |
+| `cognito_identity_pool_id` | `VITE_COGNITO_IDENTITY_POOL_ID` | Identity Pool for the Amplify SDK |
 | `cognito_user_pool_id` | `VITE_COGNITO_USER_POOL_ID` | User Pool |
 | `cognito_user_pool_client_id` | `VITE_COGNITO_USER_POOL_CLIENT_ID` | User Pool Client |
 
-Ver [`../../frontend/README.md`](../../frontend/README.md) para el lado consumidor.
+See [`../../frontend/README.md`](../../frontend/README.md) for the consumer side.
 
 ## Deploy
 
@@ -45,13 +45,13 @@ terraform plan -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 ```
 
-Variables sensibles (`api_key_name`, etc.) van en `terraform.tfvars` (gitignored — ver `.gitignore` raíz).
+Sensitive variables (`api_key_name`, etc.) live in `terraform.tfvars` (gitignored — see root `.gitignore`).
 
-## Archivos ignorados
+## Ignored files
 
-- `.terraform/` — cache local
-- `*.tfstate*` — state file (en prod mover a S3 con backend remoto)
-- `*.tfvars` — variables con valores reales
-- `modules/lambda/src/*.zip` — build artifact (Terraform lo regenera con `data "archive_file"`)
+- `.terraform/` — local cache
+- `*.tfstate*` — state file (in prod move to S3 with a remote backend)
+- `*.tfvars` — variables with real values
+- `modules/lambda/src/*.zip` — build artifact (Terraform regenerates it with `data "archive_file"`)
 
-Ver `.gitignore` del directorio.
+See `.gitignore` in this directory.

@@ -76,3 +76,9 @@ coverage/
 .tool-versions.bak
 .ade/
 .tsbuildinfo
+
+# Polyrepo clones (cada subsistema es repo git independiente, ver README.md)
+admin/
+backend/
+face-search-service/
+frontend/

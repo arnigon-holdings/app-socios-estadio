@@ -1,202 +1,227 @@
-# AGENTS.md — App Socios Estadio
+# AGENTS.md — Stadium Members App
 
-## Propósito
-Plataforma SaaS para registro de socios con verificación facial y sistema de puntos.
+## Purpose
+
+SaaS platform for member registration with facial verification and a points system.
 
 ## Stack
+
 - Frontend: React 19 + Vite + Tailwind v4 + shadcn/ui
 - Backend: Rails 8 API
-- Servicio biométrico: Go service en Cloud Run
+- Biometric service: Go service on Cloud Run
 - AWS: Rekognition, S3
 - GCP: Cloud SQL PostgreSQL, Cloud Run, Memorystore Redis
 
-## Regla principal
-Este archivo define cómo debe trabajar el agente en este proyecto.
-Prioridad: calidad, precisión, seguridad, cambios pequeños, bajo retrabajo.
+## Main Rule
 
-## Comunicación
-- En chat con humano: usar caveman full.
-- Al programar: NO usar caveman en código, nombres, comentarios, tests, commits o PRs.
-- Código siempre normal, legible y mantenible.
-- Comentarios solo cuando expliquen el porqué, no lo obvio.
+This file defines how the agent must work on this project.
+Priority: quality, accuracy, security, small changes, low rework.
 
-## Flujo obligatorio de trabajo
-Antes de cambiar código:
-1. Resumir objetivo.
-2. Declarar supuestos y restricciones.
-3. Identificar archivos, módulos y capas afectadas.
-4. Proponer plan mínimo.
-5. Definir criterio de término.
+## Communication
 
-Durante implementación:
-- Hacer cambios pequeños, locales y reversibles.
-- Tocar solo archivos necesarios.
-- Seguir patrones existentes antes de crear nuevos.
-- Si el cambio crece, dividir en pasos.
-- No hacer refactor amplio salvo instrucción explícita.
+- In chat with humans: use caveman full.
+- When writing code: do NOT use caveman in code, names, comments, tests, commits, or PRs.
+- Code is always normal, readable, and maintainable.
+- Comments only when they explain the why, not the obvious.
 
-Después de implementar:
-- Ejecutar validaciones del proyecto.
-- Reportar qué se verificó y qué no.
-- No declarar “listo” sin aclarar límites de verificación.
+## Mandatory Workflow
 
-## Harness engineering
-Aplicar guías antes de actuar y sensores después de actuar.
+Before changing code:
+1. Summarize the objective.
+2. State assumptions and constraints.
+3. Identify affected files, modules, and layers.
+4. Propose a minimal plan.
+5. Define completion criteria.
 
-### Guías
-- Seguir arquitectura, convenciones y boundaries del repo.
-- Reutilizar código antes de crear código nuevo.
-- Eliminar código muerto relacionado con el cambio.
-- Mantener diffs fáciles de revisar.
-- Favorecer soluciones simples y mantenibles.
+During implementation:
+- Make small, local, reversible changes.
+- Touch only the files that are necessary.
+- Follow existing patterns before creating new ones.
+- If a change grows, split it into steps.
+- No broad refactors unless explicitly instructed.
 
-### Sensores
-Después de cambios relevantes, ejecutar según aplique:
-- `make validate` (markdown lint + link check, en el docs repo)
-- `make lint`, `make links` (en docs repo)
+After implementation:
+- Run the project's validations.
+- Report what was verified and what was not.
+- Do not declare "done" without clarifying verification limits.
 
-> **Este repo (root infra)**: no tiene `Makefile` propio. La validación de docs vive en [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) (donde corre `make validate`).
+## Harness Engineering
+
+Apply guides before acting and sensors after acting.
+
+### Guides
+
+- Follow the repo's architecture, conventions, and boundaries.
+- Reuse existing code before creating new code.
+- Remove dead code related to the change.
+- Keep diffs easy to review.
+- Favor simple and maintainable solutions.
+
+### Sensors
+
+After relevant changes, run as applicable:
+- `make validate` (markdown lint + link check, in the docs repo)
+- `make lint`, `make links` (in the docs repo)
+
+> **This repo (root infra)**: does not have its own `Makefile`. Docs validation lives in [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) (where `make validate` runs).
 >
-> **Cada subsistema polyrepo**: corré el `Makefile` del subsistema (tiene targets específicos de su stack).
+> **Each polyrepo subsystem**: run that subsystem's `Makefile` (it has stack-specific targets).
 
-Si existe chequeo adicional por stack, usarlo también:
-- Frontend: tests de componentes, typecheck, build
-- Rails: tests, linters, validaciones de schema
-- Go: tests, format, vet o lint
+If additional checks exist per stack, use them too:
+- Frontend: component tests, typecheck, build
+- Rails: tests, linters, schema validations
+- Go: tests, format, vet or lint
 - Terraform: `terraform validate` + `terraform plan`
 
-Si algo falla, corregir antes de seguir o reportar bloqueo explícitamente.
+If something fails, fix it before continuing or report the blocker explicitly.
 
-## Principios de implementación
-Orden de prioridad:
-1. Calidad
-2. Eficiencia
-3. Seguridad
-4. Agregar código nuevo
+## Implementation Principles
 
-Reglas:
-- KISS primero.
-- DRY solo cuando haya duplicación real.
-- Borrar código obsoleto, no comentarlo.
-- No dejar imports sin uso.
-- No crear helpers, services o hooks nuevos si ya existe uno equivalente.
-- No abstraer por anticipación.
-- Toda nueva abstracción debe responder a una necesidad real actual.
-- Mantener funciones y componentes con responsabilidad clara.
-- Evitar acoplamiento innecesario entre frontend, backend y servicio Go.
+Order of priority:
+1. Quality
+2. Efficiency
+3. Security
+4. Adding new code
 
-### Regla de UX: ocultar la capa tecnológica
-- Ningún texto visible al usuario (admin, socio, o cualquier rol) puede mencionar proveedores ni servicios de infraestructura: AWS, GCP, Azure, Rekognition, S3, Cloud SQL, Lambda, Cloud Run, etc.
-- Las referencias técnicas viven solo en nombres de variables, type fields, comentarios de código, `*.md` interno y nombres de archivo/recursos. El usuario final nunca ve "Rekognition", "AWS", "GCP", etc. en la UI.
-- Al agregar mensajes de error o loading, describir el comportamiento ("Verificando tu identidad", "Buscando coincidencias", "Sin caras registradas") sin apelar a la marca o servicio detrás.
-- Excepción permitida: el campo `rekognition_face_id` y similares en types/API contracts son nombres internos del contrato, no se muestran al usuario.
+Rules:
+- KISS first.
+- DRY only when there is real duplication.
+- Delete obsolete code; do not comment it out.
+- Do not leave unused imports.
+- Do not create new helpers, services, or hooks if an equivalent already exists.
+- Do not abstract prematurely.
+- Every new abstraction must answer a real current need.
+- Keep functions and components with clear responsibility.
+- Avoid unnecessary coupling between frontend, backend, and the Go service.
 
-## Arquitectura y boundaries
+### UX Rule: Hide the Technology Layer
+
+- No user-facing text (admin, member, or any role) may mention providers or infrastructure services: AWS, GCP, Azure, Rekognition, S3, Cloud SQL, Lambda, Cloud Run, etc.
+- Technical references live only in variable names, type fields, code comments, internal `*.md`, and file/resource names. End users never see "Rekognition", "AWS", "GCP", etc. in the UI.
+- When adding error or loading messages, describe the behavior ("Verifying your identity", "Searching matches", "No faces registered") without appealing to the brand or service behind it.
+- Allowed exception: fields like `rekognition_face_id` in types/API contracts are internal contract names and are not shown to the user.
+
+## Architecture and Boundaries
+
 ### Frontend
-- Componentes de UI separados de lógica de negocio.
-- Evitar lógica compleja dentro de componentes si puede vivir en hooks, servicios o capas dedicadas.
-- Reusar componentes de shadcn/ui y patrones existentes antes de crear variantes nuevas.
-- Evitar estado global si estado local o server state es suficiente.
 
-### Backend Rails
-- Mantener controllers delgados.
-- Mover lógica de negocio a servicios, models o capas ya definidas por el proyecto.
-- Validar inputs en bordes de entrada.
-- Evitar queries N+1.
-- Ser explícito con transacciones cuando el flujo lo requiera.
-- Logs estructurados, útiles y sin secretos.
+- UI components separated from business logic.
+- Avoid complex logic inside components if it can live in hooks, services, or dedicated layers.
+- Reuse shadcn/ui components and existing patterns before creating new variants.
+- Avoid global state if local or server state is sufficient.
 
-### Go service
-- APIs pequeñas, explícitas y predecibles.
-- Timeouts obligatorios en llamadas externas.
-- Manejo de errores claro.
-- Health checks obligatorios.
-- Preparado para circuit breaker, retry con backoff y graceful degradation cuando aplique.
+### Rails Backend
 
-## Infraestructura
-- Toda infraestructura nueva o modificada debe ir por Terraform.
-- No hacer cambios manuales como solución final.
-- Separar Terraform por cloud según estructura del proyecto.
-- No hardcodear nombres de recursos, secretos, URLs o credenciales.
-- Toda configuración variable debe ir por variables o environment variables.
-- Mantener `.env.example` actualizado si cambia configuración requerida.
+- Keep controllers thin.
+- Move business logic to services, models, or layers already defined by the project.
+- Validate inputs at the entry boundaries.
+- Avoid N+1 queries.
+- Be explicit with transactions when the flow requires them.
+- Structured logs, useful and without secrets.
 
-## Seguridad
-- Nunca hardcodear credentials, API keys, tokens o secrets.
-- No exponer datos sensibles en logs.
-- Validar inputs y permisos.
-- Tratar operaciones externas y side effects como riesgo mayor.
-- Si una tarea implica escritura externa, seguir nivel de riesgo correspondiente.
+### Go Service
 
-## Riesgo operativo
+- Small, explicit, predictable APIs.
+- Mandatory timeouts on external calls.
+- Clear error handling.
+- Mandatory health checks.
+- Prepared for circuit breaker, retry with backoff, and graceful degradation when applicable.
+
+## Infrastructure
+
+- All new or modified infrastructure must go through Terraform.
+- Do not make manual changes as a final solution.
+- Separate Terraform by domain following the project structure.
+- Do not hardcode resource names, secrets, URLs, or credentials.
+- All variable configuration must go through variables or environment variables.
+- Keep `.env.example` updated if required configuration changes.
+
+## Security
+
+- Never hardcode credentials, API keys, tokens, or secrets.
+- Do not expose sensitive data in logs.
+- Validate inputs and permissions.
+- Treat external operations and side effects as a major risk.
+- If a task involves external writes, follow the corresponding risk level.
+
+## Operational Risk
+
 ### Read-only
-- Solo lectura.
-- Se puede avanzar sin confirmación.
+
+- Read only.
+- Can proceed without confirmation.
 
 ### Draft
-- Simulación o propuesta sin side effects externos.
-- Preferir este modo si hay duda.
 
-### External write
-- Cambios con efectos externos: DB, APIs, filesystem importante, infraestructura.
-- Requiere aprobación explícita antes de ejecutar acciones sensibles.
+- Simulation or proposal without external side effects.
+- Prefer this mode if in doubt.
 
-## Escalabilidad y resiliencia
-Cuando el cambio lo justifique, considerar:
-- Cache con Redis
-- Retry con backoff
+### External Write
+
+- Changes with external effects: DB, APIs, important filesystem, infrastructure.
+- Requires explicit approval before executing sensitive actions.
+
+## Scalability and Resilience
+
+When the change justifies it, consider:
+- Cache with Redis
+- Retry with backoff
 - Circuit breaker
-- Colas para trabajo pesado o async
+- Queues for heavy or async work
 - Graceful degradation
 - Health checks
-- Timeouts en toda llamada externa
+- Timeouts on every external call
 
-No aplicar patrones complejos por defecto si el problema actual no lo necesita.
+Do not apply complex patterns by default if the current problem does not need them.
 
-## Comandos del proyecto
-Usar estos comandos antes de cerrar trabajo, según el subsistema:
+## Project Commands
+
+Use these commands before closing work, according to the subsystem:
 
 **Docs repo** ([`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs)):
 - `make validate` — markdown lint + link check
 - `make lint` / `make links` (granular)
 
-**Cada subsistema polyrepo** tiene su propio `Makefile` con targets específicos:
+**Each polyrepo subsystem** has its own `Makefile` with stack-specific targets:
 - frontend: `make dev` / `make build` / `make lint` / `make validate`
-- admin: idem frontend
+- admin: same as frontend
 - backend: `make lint` (rubocop) / `make test` (rails) / `make db_seed` / `make db_console` / `make logs`
-- face-search-service: targets Go (`go build` / `go test` / `go vet`)
+- face-search-service: Go targets (`go build` / `go test` / `go vet`)
 
-Si falta algún target o no existe, reportarlo y proponer ajuste al `Makefile` del subsistema correspondiente.
+If a target is missing or does not exist, report it and propose an adjustment to that subsystem's `Makefile`.
 
 ## Definition of Done
-Un cambio está listo solo si:
-- Cumple objetivo solicitado.
-- Respeta arquitectura y boundaries.
-- No introduce duplicación obvia ni código muerto nuevo.
-- Pasa validaciones relevantes o se reporta claramente qué faltó verificar.
-- Considera seguridad y configuración.
-- Actualiza tests o docs mínimas si corresponde.
 
-## Presupuesto de trabajo
-- Step budget: máximo 50 iteraciones por tarea.
-- Time budget: máximo 5 minutos sin pedir input si hay incertidumbre o bloqueo.
-- Si contexto, riesgo o alcance crece demasiado, parar y resumir estado.
+A change is ready only if:
+- It meets the requested objective.
+- It respects architecture and boundaries.
+- It does not introduce obvious duplication or new dead code.
+- It passes relevant validations or clearly reports what could not be verified.
+- It considers security and configuration.
+- It updates tests or minimal docs when applicable.
 
-## Salida esperada del agente
-Siempre responder con:
-- Objetivo
+## Work Budget
+
+- Step budget: maximum 50 iterations per task.
+- Time budget: maximum 5 minutes without requesting input if there is uncertainty or a blocker.
+- If context, risk, or scope grows too much, stop and summarize the state.
+
+## Expected Agent Output
+
+Always respond with:
+- Objective
 - Plan
-- Cambios
-- Verificación
-- Riesgos o pendientes
+- Changes
+- Verification
+- Risks or pending items
 
-## Archivos de referencia
+## Reference Files
 
-> **Nota**: este AGENTS.md es la versión corta que vive en el root. La versión completa + docs detallados viven en el repo [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs). A partir de este cambio, el root NO contiene más docs (SPEC, ARCHITECTURE, INFRASTRUCTURE, etc.) — todos están en ese repo.
+> **Note**: this AGENTS.md is the short version that lives at the root. The full version + detailed docs live in the [`app-socios-estadio-docs`](https://github.com/arnigon-holdings/app-socios-estadio-docs) repo. As of this change, the root does NOT contain more docs (SPEC, ARCHITECTURE, INFRASTRUCTURE, etc.) — all of them are in that repo.
 
-- [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md): versión completa de este archivo (reglas operativas)
-- [`app-socios-estadio-docs/SPEC.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md): fuente de verdad funcional
-- [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md): decisiones de arquitectura
-- [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md): detalle cloud y Terraform
-- [`README.md`](./README.md): setup y comandos (este repo)
-- `Makefile` (ahora en docs repo): targets comunes de validación
+- [`app-socios-estadio-docs/AGENTS.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/AGENTS.md): full version of this file (operational rules)
+- [`app-socios-estadio-docs/SPEC.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/SPEC.md): functional source of truth
+- [`app-socios-estadio-docs/ARCHITECTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/ARCHITECTURE.md): architecture decisions
+- [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md): cloud and Terraform detail
+- [`README.md`](./README.md): setup and commands (this repo)
+- `Makefile` (now in docs repo): common validation targets

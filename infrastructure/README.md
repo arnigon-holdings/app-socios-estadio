@@ -1,62 +1,62 @@
 # `infrastructure/` — Terraform
 
-Toda la infra del proyecto vive acá, separada por **quién la consume** (no por cloud).
+All project infrastructure lives here, split by **who consumes it** (not by cloud).
 
-> **Por qué no por cloud**: AWS tiene recursos para backend (S3 + Rekognition) y para frontend (API Gateway + Lambda + Cognito). GCP todavía no tiene código Terraform desplegado (la fase GCP está planificada en [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md)). Separar por dominio hace más claro qué recurso es para qué servicio.
+> **Why not by cloud**: AWS has resources for the backend (S3 + Rekognition) and for the frontend (API Gateway + Lambda + Cognito). GCP does not have Terraform code deployed yet (the GCP phase is planned in [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md)). Splitting by domain makes it clearer which resource belongs to which service.
 
-## Estructura
+## Structure
 
 ```
 infrastructure/
-├── aws/                  ← Recursos AWS consumidos por el BACKEND (Rails)
-│   ├── main.tf           ← provider + S3 bucket + Rekognition collection + IAM
-│   ├── modules/{s3,rekognition,iam}/
-│   └── README.md         ← (próximo)
+├── aws/                  ← AWS resources consumed by the BACKEND (Rails)
+│   ├── main.tf           ← provider + S3 bucket + Rekognition collection + IAM role (inline)
+│   ├── modules/{s3,rekognition}/
+│   └── README.md         ← (next)
 │
-└── frontend-liveness/    ← Recursos AWS consumidos por el FRONTEND (browser)
-    ├── main.tf           ← provider + API Gateway + Lambda + Cognito + (Lightsail opcional)
+└── frontend-liveness/    ← AWS resources consumed by the FRONTEND (browser)
+    ├── main.tf           ← provider + API Gateway + Lambda + Cognito + (optional Lightsail)
     ├── modules/{apigateway,lambda,cognito,iam,lightsail}/
-    └── README.md         ← detallado
+    └── README.md         ← detailed
 ```
 
-## ¿Quién consume qué?
+## Who consumes what?
 
 ### `infrastructure/aws/`
 
-Lo usa el **backend Rails** (`backend/`) y el **Go face-search service** (`face-search-service/`) corriendo en Cloud Run.
+Used by the **Rails backend** (`backend/`) and the **Go face-search service** (`face-search-service/`) running on Cloud Run.
 
-| Recurso | Lo consume |
+| Resource | Consumed by |
 |---|---|
-| S3 bucket `perfilamiento-faces` | `S3Uploader` (Rails) sube fotos de referencia + audit; Go service genera presigned URLs |
-| Rekognition collection `socios_stadium_users` | `FaceIndexer` (Rails) hace `IndexFaces`; Go service hace `SearchFacesByImage` |
-| IAM role | Service account de Cloud Run (Rails + Go) |
+| S3 bucket `perfilamiento-faces` | `S3Uploader` (Rails) uploads reference + audit photos; Go service generates presigned URLs |
+| Rekognition collection `socios_stadium_users` | `FaceIndexer` (Rails) runs `IndexFaces`; Go service runs `SearchFacesByImage` |
+| IAM role | Cloud Run service account (Rails + Go) |
 
 ### `infrastructure/frontend-liveness/`
 
-Lo consume el **frontend SPA** (`frontend/`) en el browser, vía AWS Amplify SDK.
+Consumed by the **frontend SPA** (`frontend/`) in the browser, via the AWS Amplify SDK.
 
-| Recurso | Lo consume |
+| Resource | Consumed by |
 |---|---|
-| API Gateway | Vite dev proxy (`vite.config.ts`) + Amplify SDK en prod |
-| Lambda functions | Soporte del flow de Face Liveness (create session + get results + signed URL) |
-| Cognito Identity Pool + User Pool | Amplify SDK para credential vending |
-| IAM | Roles para Lambda + API Gateway |
-| Lightsail (opcional) | Relay instance para WebSocket streaming (alternativa a API Gateway) |
+| API Gateway | Vite dev proxy (`vite.config.ts`) + Amplify SDK in prod |
+| Lambda functions | Support for the Face Liveness flow (create session + get results + signed URL) |
+| Cognito Identity Pool + User Pool | Amplify SDK for credential vending |
+| IAM | Roles for Lambda + API Gateway |
+| Lightsail (optional) | Relay instance for WebSocket streaming (alternative to API Gateway) |
 
-## Convención de nombres
+## Naming convention
 
-- Directorio en singular (`aws/`, `frontend-liveness/`), no por cloud provider — porque puede haber infra GCP en el futuro que no encaje en `aws/`.
-- Sufijo `-liveness` cuando el dominio es específico (ej: `frontend-liveness/`).
+- Directory in singular (`aws/`, `frontend-liveness/`), not by cloud provider — because there may be GCP infrastructure in the future that does not fit under `aws/`.
+- Suffix `-liveness` when the domain is specific (e.g.: `frontend-liveness/`).
 
-## Estado
+## Status
 
-- ✅ `infrastructure/aws/` — desplegado en dev.
-- ✅ `infrastructure/frontend-liveness/` — desplegado en dev.
-- ⏳ GCP (Cloud SQL + Cloud Run + Memorystore) — pendiente, ver [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) sección 4.
+- ✅ `infrastructure/aws/` — deployed in dev.
+- ✅ `infrastructure/frontend-liveness/` — deployed in dev.
+- ⏳ GCP (Cloud SQL + Cloud Run + Memorystore) — pending, see [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) section 4.
 
-## Deploy local
+## Local deploy
 
-Cada subdirectorio tiene su propio `.terraform/` y state. Para no mezclarlos:
+Each subdirectory has its own `.terraform/` and state. To avoid mixing them:
 
 ```bash
 # Backend infra
@@ -70,4 +70,4 @@ terraform init
 terraform plan
 ```
 
-Ver [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) sección 7 para los targets de Makefile (`make tf-plan-aws`, etc.).
+See [`app-socios-estadio-docs/INFRASTRUCTURE.md`](https://github.com/arnigon-holdings/app-socios-estadio-docs/blob/main/INFRASTRUCTURE.md) section 7 for Makefile targets (`make tf-plan-aws`, etc.).

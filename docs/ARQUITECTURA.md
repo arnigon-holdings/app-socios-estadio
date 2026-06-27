@@ -1,4 +1,4 @@
-# Arquitectura App Socios Estadio
+# Stadium Members App — Architecture
 
 ```mermaid
 flowchart TB
@@ -31,7 +31,7 @@ flowchart TB
     end
 
     subgraph External["External Systems"]
-        Camera["Cámaras de<br/>Estadio"]
+        Camera["Stadium<br/>Cameras"]
         WhatsApp["WhatsApp<br/>Twilio"]
     end
 
@@ -53,7 +53,7 @@ flowchart TB
     Admin -->|POST /search-face<br/>Bearer token| Go
 
     %% Camera to Go Service
-    Camera -->|Frame con cara| Go
+    Camera -->|Frame with face| Go
     Go -->|SearchFacesByImage| Collection
     Go -->|Query user data| PostgreSQL
     Go -->|matches: rut, phone| Camera
@@ -79,9 +79,9 @@ flowchart TB
     class FE,Admin frontend
 ```
 
-## Flujos Principales
+## Main flows
 
-### Registro de Usuario
+### User registration
 ```mermaid
 sequenceDiagram
     participant FE as Frontend
@@ -113,10 +113,10 @@ sequenceDiagram
     Rails-->>FE: 201 Created
 ```
 
-### Búsqueda por Cara
+### Face search
 ```mermaid
 sequenceDiagram
-    participant Camera as Cámaras Estadio
+    participant Camera as Stadium Cameras
     participant Go as Go Service
     participant Rekognition as Rekognition
     participant DB as Cloud SQL
@@ -125,7 +125,7 @@ sequenceDiagram
     Go->>Rekognition: SearchFacesByImage
     Rekognition-->>Go: face_matches[]
 
-    Note over Go: Consolidar por user_id<br/>(múltiples faces = mismo usuario)
+    Note over Go: Consolidate by user_id<br/>(multiple faces = same user)
 
     Go->>DB: SELECT rut, phone<br/>WHERE id = user_id
     DB-->>Go: user data
@@ -133,22 +133,22 @@ sequenceDiagram
     Go-->>Camera: [{ rut, phone, confidence }]
 ```
 
-## Componentes por Cloud
+## Components per cloud
 
 ### AWS
-| Componente | Servicio | Propósito |
+| Component | Service | Purpose |
 |-----------|----------|-----------|
-| S3 Bucket | S3 | Almacenar fotos de usuarios |
-| Face Collection | Rekognition | Índice de caras para búsqueda |
+| S3 Bucket | S3 | Store user photos |
+| Face Collection | Rekognition | Face index for search |
 | Lambda + API Gateway | Lambda | Face Liveness sessions |
-| FaceLivenessDetector | SDK Browser | UI del challenge de liveness |
+| FaceLivenessDetector | Browser SDK | Liveness challenge UI |
 
 ### GCP
-| Componente | Servicio | Propósito |
+| Component | Service | Purpose |
 |-----------|----------|-----------|
-| Rails Backend | Cloud Run | API REST, lógica de negocio |
-| Go Service | Cloud Run | Búsqueda facial (face search) |
-| PostgreSQL | Cloud SQL | Datos: users, face_records, teams |
+| Rails Backend | Cloud Run | REST API, business logic |
+| Go Service | Cloud Run | Facial search (face search) |
+| PostgreSQL | Cloud SQL | Data: users, face_records, teams |
 | Redis | Memorystore | Cache, rate limiting |
 
 ## Terraform State
