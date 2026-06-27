@@ -12,6 +12,29 @@ SaaS platform for member registration with facial verification and a points syst
 - AWS: Rekognition, S3
 - GCP: Cloud SQL PostgreSQL, Cloud Run, Memorystore Redis
 
+## Setup (for agents / LLMs landing on the project)
+
+The project is split across **6 git repos** (this root infra repo + 4 app polyrepos + 1 docs repo). Clone them all before doing any work so that cross-repo references resolve and polyrepo code is available locally:
+
+```bash
+# from a parent directory
+git clone https://github.com/arnigon-holdings/app-socios-estadio-infra.git
+cd app-socios-estadio-infra
+
+# app polyrepos (each is an independent git repo with its own .git)
+git clone https://github.com/arnigon-holdings/app-socios-estadio-backend.git     backend
+git clone https://github.com/arnigon-holdings/app-socios-estadio-frontend.git    frontend
+git clone https://github.com/arnigon-holdings/app-socios-estadio-admin.git       admin
+git clone https://github.com/arnigon-holdings/app-socios-estadio-face-search.git face-search-service
+
+# docs repo (optional — full AGENTS.md, SPEC.md, ARCHITECTURE.md, INFRASTRUCTURE.md, Makefile)
+git clone https://github.com/arnigon-holdings/app-socios-estadio-docs.git        docs-repo
+```
+
+After cloning, follow the quickstart in [`README.md`](./README.md) for prereqs (Docker, Node 20+, Ruby 3.4, AWS CLI) and dev commands per subsystem. For the full repo map and what each polyrepo contains, see "Project repo map" in [`README.md`](./README.md).
+
+For architecture context (components per cloud, main flows), read [`docs/ARQUITECTURA.md`](./docs/ARQUITECTURA.md). For Terraform organization, read [`infrastructure/README.md`](./infrastructure/README.md).
+
 ## Main Rule
 
 This file defines how the agent must work on this project.

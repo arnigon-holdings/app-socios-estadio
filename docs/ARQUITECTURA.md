@@ -138,20 +138,20 @@ sequenceDiagram
 ## Components per cloud
 
 ### AWS
-| Component | Service | Purpose |
-|-----------|----------|-----------|
-| S3 Bucket | S3 | Store user photos |
-| Face Collection | Rekognition | Face index for search |
-| Lambda + API Gateway | Lambda | Face Liveness sessions |
-| FaceLivenessDetector | Browser SDK | Liveness challenge UI |
+| Component | Service | Repo | Purpose |
+|-----------|----------|------|---------|
+| S3 Bucket | S3 | [`infrastructure/aws/`](https://github.com/arnigon-holdings/app-socios-estadio-infra/tree/main/infrastructure/aws) (this repo) | Store user photos |
+| Face Collection | Rekognition | [`infrastructure/aws/`](https://github.com/arnigon-holdings/app-socios-estadio-infra/tree/main/infrastructure/aws) (this repo) | Face index for search |
+| Lambda + API Gateway | Lambda | [`infrastructure/frontend-liveness/`](https://github.com/arnigon-holdings/app-socios-estadio-infra/tree/main/infrastructure/frontend-liveness) (this repo) | Face Liveness sessions |
+| FaceLivenessDetector | Browser SDK | [`app-socios-estadio-frontend`](https://github.com/arnigon-holdings/app-socios-estadio-frontend) (polyrepo) | Liveness challenge UI |
 
 ### GCP
-| Component | Service | Purpose |
-|-----------|----------|-----------|
-| Rails Backend | Cloud Run | REST API, business logic |
-| Go Service | Cloud Run | Facial search (face search) |
-| PostgreSQL | Cloud SQL | Data: users, face_records, teams |
-| Redis | Memorystore | Cache, rate limiting |
+| Component | Service | Repo | Purpose |
+|-----------|----------|------|---------|
+| Rails Backend | Cloud Run | [`app-socios-estadio-backend`](https://github.com/arnigon-holdings/app-socios-estadio-backend) (polyrepo) | REST API, business logic |
+| Go Service | Cloud Run | [`app-socios-estadio-face-search`](https://github.com/arnigon-holdings/app-socios-estadio-face-search) (polyrepo) | Facial search (face search) |
+| PostgreSQL | Cloud SQL | Terraform (future, this repo) | Data: users, face_records, teams |
+| Redis | Memorystore | Terraform (future, this repo) | Cache, rate limiting |
 
 ## Terraform State
 
